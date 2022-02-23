@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Carbon\Carbon;
 
 class CreateLessonsTable extends Migration
 {
@@ -19,7 +20,7 @@ class CreateLessonsTable extends Migration
             $table->string('coach_name');
             $table->unsignedInteger('capacity');
             $table->timestamp('start_at');
-            $table->timestamp('end_at');
+            $table->timestamp('end_at')->default(Carbon::now());
             $table->timestamps();
         });
     }
