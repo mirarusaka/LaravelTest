@@ -39,17 +39,15 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    public function canReserve(Lesson $lesson): bool
+    public function canReserve(int $remainingCount, int $reservationCount): bool
     {
-        if ($lesson->remainingCount() === 0) {
+        if ($remainingCount === 0) {
             return false;
         }
-
         if ($this->plan === 'gold') {
             return true;
         }
-
-        return $this->reservationCountThisMonth() < 5;
+        return $reservationCount < 5;
     }
 
     public function reservations(): HasMany

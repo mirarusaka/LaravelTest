@@ -18,18 +18,14 @@ class UserTest extends TestCase
     * @param bool $canReserve
     * @dataProvider dataCanReserve
     */
-    public function testCanReserve(string $plan, int $capacity, int $remainingCount, int $reservationCount, bool $canReserve)
+    public function testCanReserve(string $plan, int $remainingCount, int $reservationCount, bool $canReserve)
     {
-        /** @var User $user */
-        $user = Mockery::mock(new User());
-        $user->shouldReceive('reservationCountThisMonth')->andReturn($reservationCount);
+        $user = new User();
         $user->plan = $plan;
 
-        /** @var Lesson $lesson */
-        $lesson = Mockery::mock(Lesson::class);
-        $lesson->shouldReceive('remainingCount')->andReturn($remainingCount);
+        $lesson = new Lesson();
 
-        $this->assertSame($canReserve, $user->canReserve($lesson));
+        $this->assertSame($canReserve, $user->canReserve($lesson->remainingCount(), $reservationCount));
     }
 
     public function dataCanReserve()
@@ -37,10 +33,33 @@ class UserTest extends TestCase
         return [
             '予約可:レギュラー,空きあり,月の上限以下' => [
                 'plan' => 'regular',
-                'capacity' => 2,
-                'totalReservationCount' => 1,
-                'userReservationCount' => 4,
+                'remainingCount' => 1,
+                'reservationCount' => 4,
                 'canReserve' => true,
+            ],
+            '予約不可:レギュラー,空きあり,月の上限' => [
+                'plan' => 'regular',
+                'remainingCount' => 1,
+                'reservationCount' => 5,
+                'canReserve' => false,
+            ],
+            '予約不可:レギュラー,空きなし,月の上限以下' => [
+                'plan' => 'regular',
+                'remainingCount' => 0,
+                'reservationCount' => 4,
+                'canReserve' => false,
+            ],
+            '予約可:ゴールド,空きあり' => [
+                'plan' => 'gold',
+                'remainingCount' => 1,
+                'reservationCount' => 5,
+                'canReserve' => true,
+            ],
+            '予約不可:ゴールド,空きなし' => [
+                'plan' => 'gold',
+                'remainingCount' => 0,
+                'reservationCount' => 5,
+                'canReserve' => false,
             ],
         ];
     }
