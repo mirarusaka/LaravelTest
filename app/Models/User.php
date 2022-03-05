@@ -39,16 +39,6 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    public function canReserve(int $remainingCount, int $reservationCount): bool
-    {
-        if ($remainingCount === 0) {
-            return false;
-        }
-        if ($this->plan === 'gold') {
-            return true;
-        }
-        return $reservationCount < 5;
-    }
 
     public function reservations(): HasMany
     {
@@ -66,5 +56,23 @@ class User extends Authenticatable
         // return $this->reservations()
         //    ->whereRaw("DATE_FORMAT(created_at, '%Y%m') = ?", $today->format('Ym'))
         //    ->count();
+    }
+
+    /**
+     * @param Lesson $lesson
+     * @return void
+     * @throws \Exception
+     */
+    public function canReserve(Lesson $lesson): void
+    {
+        if ($lesson->remainingCount() === 0) {
+            throw new \Exception('レッスンの予約可能上限に達しています。');
+        }
+        if ($this->plan === 'gold') {
+            return;
+        }
+        if ($this->reservationCountThisMonth() === 5) {
+            throw new \Exception('今月の予約がプランの上限に達しています。');
+        }
     }
 }
