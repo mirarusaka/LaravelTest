@@ -19,3 +19,7 @@ Route::get('/', function () {
 });
 
 Route::get('/lessons/{lesson}', 'LessonController@show')->name('lessons.show');
+
+Auth::routes();
+
+Route::get('/home', 'HomeController@index')->name('home');
