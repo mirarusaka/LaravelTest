@@ -7,18 +7,18 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Lesson extends Model
 {
-    public function __toString()
+    public function reservations(): HasMany
     {
-        return $this->mark();
+        return $this->hasMany(Reservation::class);
     }
 
     public function getVacancyLevelAttribute(): VacancyLevel
-     {
-         return new VacancyLevel($this->remainingCount());
-     }
+    {
+        return new VacancyLevel($this->remainingCount());
+    }
 
-     public function remainingCount(): int
-     {
-         return 0;
-     }
+    public function remainingCount(): int
+    {
+        return $this->capacity - $this->reservations()->count();
+    }
 }
